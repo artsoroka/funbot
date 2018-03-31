@@ -1,0 +1,22 @@
+{
+  "name": "funbot",
+  "version": "0.0.1",
+  "description": "fun bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Artem Soroka <art.soroka@ahoo.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artsoroka/funbot.git"
+  },
+  "devDependencies": {
+    "localtunnel": "^1.8.3"
+  },
+  "dependencies": {
+    "request": "^2.85.0"
+  }
+}
