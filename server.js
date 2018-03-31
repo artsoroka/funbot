@@ -1,4 +1,5 @@
-const http = require('http'); 
+const http    = require('http'); 
+const Event   = require('events'); 
 const request = require('request'); 
 const config  = require('./config'); 
 
@@ -27,6 +28,43 @@ const parseJson = (str) => {
   return result; 
 }
 
+class Bot extends Event{}
+const bot = new Bot(); 
+
+bot
+  .on('command:casino', (message) => {
+    console.log('Casino command', message.body); 
+
+    sendMessage({
+      userId: message.user_id, 
+      text: 'You won the prize: ' + message.body
+    }, (err, response, body) => {
+      if( err ) return console.log('ERROR: %s', err); 
+      console.log(body); 
+    })
+
+  })
+  .on('message_new', (message) => {
+    console.log('Got new message from %d : %s', message.user_id, message.body); 
+    console.log('===Detecting line break===');
+    const arr = message.body.split('\n'); 
+    console.log('Length: %d array: %s', arr.length, arr);
+    console.log('===Detecting line break===');
+    
+    if( message.body.split(' ')[0] == 'casino'){
+      return bot.emit('command:casino', message); 
+    }
+
+    sendMessage({
+      userId: message.user_id, 
+      text: 'You said: ' + message.body
+    }, (err, response, body) => {
+      if( err ) return console.log('ERROR: %s', err); 
+      console.log(body); 
+    })
+  })
+
+
 const server = http
   .createServer((req,res) => {
     const data = []; 
@@ -43,21 +81,7 @@ const server = http
       	  return res.end(config.confirmKey); 
       	}
 
-      	if(message.type == 'message_new'){
-      	  console.log('Got new message from %d : %s', message.object.user_id, message.object.body); 
-          console.log('===Detecting line break===');
-          const arr = message.object.body.split('\n'); 
-          console.log('Length: %d array: %s', arr.length, arr);
-          console.log('===Detecting line break===');
-      	  sendMessage({
-            userId: message.object.user_id, 
-            text: 'You said: ' + message.object.body
-          }, (err, response, body) => {
-            if( err ) return console.log('ERROR: %s', err); 
-            console.log(body); 
-          })
-      	}
-
+        bot.emit(message.type, message.object); 
       	res.end('ok'); 
       
       }); 
